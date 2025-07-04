@@ -1,0 +1,12 @@
+1、有符号数运算
+如madd
+{HI_temp, LO_temp} <= {HI, LO} + $signed($signed(64'd0) + $signed(A) * $signed(B));
+{HI_temp, LO_temp} <= $sigend({HI, LO}) + $signed(A) * $signed(B);
+
+2、清空延迟槽
+需要注意的是，如果当前正在处于stall状态时，不能清空延迟槽（stall说明前面指令的Tnew大于新指令的Tuse，即需要传入CMP模块的两个值的最新值还没有计算出来，因此还无法转发到CMP中）
+wire D_Reg_clr = check_D & ~D_CMP_out & ~stall;
+
+3、条件存储类
+assign   stall_rs_E = (D_A1 != 5'd0) & (check_E ? (D_A1 == E_A3 | D_A1 == 5'd31) : D_A1 == E_A3) & (RFWrite_E) & (Tuse_rs < Tnew_E);
+wire M_A3_new = check_M ? (condition ? `rt : 5'd31) : M_A3; 

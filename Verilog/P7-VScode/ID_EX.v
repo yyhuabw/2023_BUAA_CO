@@ -1,0 +1,80 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    11:42:17 12/07/2023 
+// Design Name: 
+// Module Name:    ID_EX 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+`include "macros.v"
+
+module ID_EX(
+    input clk,
+    input reset,
+    input Req,
+    input IDEX_clear,//Stall
+    input [31:0] d_PC,
+    input [31:0] d_Instr,
+    input [4:0] d_WriteReg,
+    input [31:0] d_Dout,
+    input [31:0] d_MF_rs,
+    input [31:0] d_MF_rt,
+    input d_BD,
+    input [4:0] d_ExcCode,
+    output reg [31:0] IDEX_PC,
+    output reg [31:0] IDEX_Instr,
+    output reg [4:0] IDEX_WriteReg,
+    output reg [31:0] IDEX_Dout,
+    output reg [31:0] IDEX_RD1,
+    output reg [31:0] IDEX_RD2,
+    output reg IDEX_BD,
+    output reg [4:0] IDEX_ExcCode
+    );
+
+    always @(posedge clk) begin
+        if (reset || Req) begin
+            IDEX_PC <= `PC_Reset;
+            IDEX_Instr <= `Instr_Reset;
+            IDEX_WriteReg <= `reg_zero;
+            IDEX_Dout <= 0;
+            IDEX_RD1 <= 0;
+            IDEX_RD2 <= 0;
+            IDEX_BD <= 0;
+            IDEX_ExcCode <= `code_None;
+        end
+        else if (IDEX_clear) begin
+            IDEX_PC <= d_PC;
+            IDEX_Instr <= `Instr_Reset;
+            IDEX_WriteReg <= `reg_zero;
+            IDEX_Dout <= 0;
+            IDEX_RD1 <= 0;
+            IDEX_RD2 <= 0;
+            IDEX_BD <= d_BD;
+            IDEX_ExcCode <= `code_None;
+        end
+        else begin
+            IDEX_PC <= d_PC;
+            IDEX_Instr <= d_Instr;
+            IDEX_WriteReg <= d_WriteReg;
+            IDEX_Dout <= d_Dout;
+            IDEX_RD1 <= d_MF_rs;
+            IDEX_RD2 <= d_MF_rt;
+            IDEX_BD <= d_BD;
+            IDEX_ExcCode <= d_ExcCode;
+        end
+    end
+
+
+endmodule
